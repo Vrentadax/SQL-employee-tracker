@@ -92,7 +92,7 @@ const init = () => {
                      INNER JOIN departments ON roles.department_id = departments.id
                      LEFT JOIN employees manager ON manager.id = employee.manager_id`;
         db.query(sql, (err, rows) => {
-            if(err) {
+            if (err) {
                 console.log(err.message);
                 return;
             }
@@ -112,7 +112,7 @@ const init = () => {
             const sql = `INSERT INTO departments(department) VALUES (?)`;
             const params = input.new_department;
             db.query(sql, params, (err, result) => {
-                if(err) {
+                if (err) {
                     console.log(err);
                     return;
                 }
@@ -134,10 +134,10 @@ const init = () => {
                 name: 'new_department_id',
                 message: `What is the new role's department id?`,
                 validate: input => {
-                    if(!isNaN(input)) {
+                    if (!isNaN(input)) {
                         return true;
                     } else {
-                        console.log(' Please enter a number');
+                        console.log('Please enter a number');
                         return false;
                     };
                 }
@@ -147,7 +147,7 @@ const init = () => {
                 name: 'new_salary',
                 message: `What is the new role's salary?`,
                 validate: input => {
-                    if(isNaN(input)) {
+                    if (isNaN(input)) {
                         console.log('Please enter a number');
                         return false;
                     } else {
@@ -159,7 +159,7 @@ const init = () => {
             const sql = `INSERT INTO roles(title, department_id, salary) VALUES (?,?,?)`;
             const params = [input.new_role, input.new_department_id, input.new_salary];
             db.query(sql, params, (err, result) => {
-                if(err) {
+                if (err) {
                     console.log(err);
                     return;
                 }
@@ -186,23 +186,37 @@ const init = () => {
                 name: 'role_id',
                 message: `What is the new employee's role id?`,
                 validate: input => {
-                    if(!isNaN(input)) {
+                    if (!isNaN(input)) {
                         return true;
                     } else {
-                        console.log(' Please enter a number');
+                        console.log('Please enter a number');
                         return false;
                     };
                 }
             },
             {
+                type: 'confirm',
+                name: 'confirm_manager',
+                messege: 'Is this person a manager?',
+                default: false
+            },
+            {
                 type: 'input',
                 name: 'manager_id',
-                message: `What is the new employee's manager id?`,
+                message: `What is the new employee's manager id? (Null if not applicable)`,
+                when: ({ confirm_manager }) => {
+                    if (confirm_manager) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                },
                 validate: input => {
-                    if(!isNaN(input)) {
+                    if (!isNaN(input)) {
                         return true;
                     } else {
-                        console.log(' Please enter a number');
+                        console.log('Please enter a number');
                         return false;
                     };
                 }
@@ -211,7 +225,7 @@ const init = () => {
             const sql = `INSERT INTO employees(first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`;
             const params = [input.first_name, input.last_name, input.role_id, input.manager_id];
             db.query(sql, params, (err, result) => {
-                if(err) {
+                if (err) {
                     console.log(err);
                     return;
                 }
@@ -226,7 +240,7 @@ const init = () => {
     };
 
     const done = () => {
-        console.log ('Goodbye!');
+        console.log('Goodbye!');
         process.exit();
     };
 
