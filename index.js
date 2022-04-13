@@ -18,66 +18,111 @@ const inquirer = require('inquirer');
 const table = require('console.table');
 const db = require('./db/connection');
 
-function init() {
-    function options() {
+// initial function to start everything
+const init = () => {
+    const mainMenu = () => {
         inquirer.prompt([
             {
                 type: 'list',
                 name: 'main',
                 message: 'What would you like to do?',
-                choices: ['View all departments','View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee']
+                choices: [new inquirer.Separator('---VIEW---'), 'View all departments', 'View all roles', 'View all employees', new inquirer.Separator('---ADD---'), 'Add a department', 'Add a role', 'Add an employee', new inquirer.Separator('---UPDATE---'), 'Update an employee role', new inquirer.Separator('---DONE---'), 'Done!']
             },
         ]).then(input => {
-            switch(input.main) {
-                case 'view all departments':
+            switch (input.main) {
+                case 'View all departments':
                     viewDepartments();
                     break;
-                case 'view all roles':
+                case 'View all roles':
                     viewRoles();
                     break;
-                case 'view all employees':
+                case 'View all employees':
                     viewEmployees();
                     break;
-                case 'add a department':
+                case 'Add a department':
                     addDepartment();
                     break;
-                case 'add a role':
+                case 'Add a role':
                     addRole();
                     break;
-                case 'add an employee':
+                case 'Add an employee':
                     addEmployee();
                     break;
-                case 'update an employee role':
+                case 'Update an employee role':
                     updateRole();
                     break;
+                default:
+                    done();
             };
         });
     };
 
-    function viewDepartments() {
+    const viewDepartments = () => {
+        const sql = `SELECT * FROM departments`;
+        db.query(sql, (err, rows) => {
+            if (err) {
+                console.log(err.message);
+                return;
+            }
+            console.table(rows);
+            mainMenu();
+        });
+    };
+
+    const viewRoles = () => {
+        const sql = `SELECT roles.id, roles.title, departments.department, roles.salary
+                     FROM roles
+                     INNER JOIN departments ON roles.department_id = departments.id`;
+        db.query(sql, (err, rows) => {
+            if (err) {
+                console.log(err.message);
+                return;
+            }
+            console.table(rows);
+            mainMenu();
+        });
+    };
+
+    const viewEmployees = () => {
+        const sql = `SELECT employee.id, employee.first_name, employee.last_name,
+                     roles.title, departments.department, roles.salary,
+                     concat(manager.first_name, ' ', manager.last_name) manager
+                     FROM employees employee
+                     INNER JOIN roles ON employee.role_id = roles.id
+                     INNER JOIN departments ON roles.department_id = departments.id
+                     LEFT JOIN employees manager ON manager.id = employee.manager_id`;
+        db.query(sql, (err, rows) => {
+            if(err) {
+                console.log(err.message);
+                return;
+            }
+            console.table(rows);
+            mainMenu();
+        });
+    };
+
+    const addDepartment = () => {
 
     };
 
-    function viewRoles() {
+    const addRole = () => {
 
     };
 
-    function viewEmployees() {
+    const addEmployee = () => {
 
     };
 
-    function addDepartment() {
+    const updateRole = () => {
 
     };
 
-    function addRole() {
-
+    const done = () => {
+        console.log ('Goodbye!');
+        process.exit();
     };
 
-    function addEmployee() {
+    mainMenu();
+};
 
-    };
-
-    options();
-}
 init();
