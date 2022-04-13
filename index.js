@@ -197,13 +197,13 @@ const init = () => {
             {
                 type: 'confirm',
                 name: 'confirm_manager',
-                messege: 'Is this person a manager?',
+                message: 'Is this person a manager?',
                 default: false
             },
             {
                 type: 'input',
                 name: 'manager_id',
-                message: `What is the new employee's manager id? (Null if not applicable)`,
+                message: `What is the new employee's manager id?`,
                 when: ({ confirm_manager }) => {
                     if (confirm_manager) {
                         return true;
