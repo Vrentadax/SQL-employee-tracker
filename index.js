@@ -236,7 +236,53 @@ const init = () => {
     };
 
     const updateRole = () => {
+        const employees = [];
+        db.query(`SELECT employees.id, employees.first_name, employees.last_name FROM employees`, (err, result) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
 
+            result.forEach(item => {
+                const name = `${item.first_name} ${item.last_name}`;
+                employees.push(name);
+            });
+
+            inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'update',
+                    message: `Who's role do you want to update?`,
+                    choices: employees
+                },
+                {
+                    type: 'input',
+                    name: 'new_role',
+                    message: `What is their new role id?`,
+                    validate: input => {
+                        if (!isNaN(input)) {
+                            return true;
+                        } else {
+                            console.log(' Please enter a number');
+                            return false;
+                        };
+                    }
+                }
+            ]).then(input => {
+                const split = input.update.split(' ');
+                const sql = `UPDATE employees
+                             SET role_id = ${input.new_role}
+                             WHERE first_name = '${split[0]}'
+                             AND last_name = '${split[1]}'`
+                db.query(sql, (err, result) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                    console.log(result);
+                    mainMenu();
+                });
+            });
+        });
     };
 
     const done = () => {
