@@ -28,6 +28,7 @@ const init = () => {
                 message: 'What would you like to do?',
                 choices: [new inquirer.Separator('---VIEW---'), 'View all departments', 'View all roles', 'View all employees', new inquirer.Separator('---ADD---'), 'Add a department', 'Add a role', 'Add an employee', new inquirer.Separator('---UPDATE---'), 'Update an employee role', new inquirer.Separator('---DONE---'), 'Done!']
             },
+            // switch for main menu to navigate to functions
         ]).then(input => {
             switch (input.main) {
                 case 'View all departments':
@@ -57,6 +58,7 @@ const init = () => {
         });
     };
 
+    // pulls all departments into a table
     const viewDepartments = () => {
         const sql = `SELECT * FROM departments`;
         db.query(sql, (err, rows) => {
@@ -69,6 +71,7 @@ const init = () => {
         });
     };
 
+    // pulls all roles (id/title/salary) and lists them in a table with department
     const viewRoles = () => {
         const sql = `SELECT roles.id, roles.title, departments.department, roles.salary
                      FROM roles
@@ -83,6 +86,7 @@ const init = () => {
         });
     };
 
+    // pulls all employees (id/first and last name) and lists them with role/department/manager
     const viewEmployees = () => {
         const sql = `SELECT employee.id, employee.first_name, employee.last_name,
                      roles.title, departments.department, roles.salary,
@@ -101,13 +105,16 @@ const init = () => {
         });
     };
 
+    // add a new department to db
     const addDepartment = () => {
+        // prompts user for new department name
         inquirer.prompt([
             {
                 type: 'input',
                 name: 'new_department',
                 message: 'What is the new department called?'
             }
+        // insert department into table
         ]).then(input => {
             const sql = `INSERT INTO departments(department) VALUES (?)`;
             const params = input.new_department;
@@ -122,7 +129,9 @@ const init = () => {
         });
     };
 
+    // add a new role to the db
     const addRole = () => {
+        // prompt user for necessary info
         inquirer.prompt([
             {
                 type: 'input',
@@ -155,6 +164,7 @@ const init = () => {
                     };
                 }
             }
+        // insert role/department/salary
         ]).then(input => {
             const sql = `INSERT INTO roles(title, department_id, salary) VALUES (?,?,?)`;
             const params = [input.new_role, input.new_department_id, input.new_salary];
@@ -169,6 +179,7 @@ const init = () => {
         });
     };
 
+    // add a new employee and assign department and confirm manager (if any)
     const addEmployee = () => {
         inquirer.prompt([
             {
@@ -221,6 +232,7 @@ const init = () => {
                     };
                 }
             }
+        // insert user data into table
         ]).then(input => {
             const sql = `INSERT INTO employees(first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`;
             const params = [input.first_name, input.last_name, input.role_id, input.manager_id];
@@ -235,6 +247,7 @@ const init = () => {
         });
     };
 
+    
     const updateRole = () => {
         const employees = [];
         db.query(`SELECT employees.id, employees.first_name, employees.last_name FROM employees`, (err, result) => {
