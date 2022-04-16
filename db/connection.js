@@ -1,5 +1,7 @@
+// require mysql2 package
 const mysql = require('mysql2');
 
+// sql credentials to connect to db
 const db = mysql.createConnection(
     {
         host: 'localhost',

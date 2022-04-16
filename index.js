@@ -247,9 +247,10 @@ const init = () => {
         });
     };
 
-    
+    // update an employee and assign new role
     const updateRole = () => {
         const employees = [];
+        // create list of employees to select from
         db.query(`SELECT employees.id, employees.first_name, employees.last_name FROM employees`, (err, result) => {
             if (err) {
                 console.log(err);
@@ -261,6 +262,7 @@ const init = () => {
                 employees.push(name);
             });
 
+            // request user input for new updated role they want to assign
             inquirer.prompt([
                 {
                     type: 'list',
@@ -298,6 +300,7 @@ const init = () => {
         });
     };
 
+    // simple function to quit application when "Done!" is selected
     const done = () => {
         console.log('Goodbye!');
         process.exit();
